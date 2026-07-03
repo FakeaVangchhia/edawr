@@ -12,9 +12,14 @@ export const createClient = (request: NextRequest) => {
     },
   });
 
+  // Fallback: If environment variables are not defined, bypass and return unmodified response.
+  if (!supabaseUrl || !supabaseKey) {
+    return supabaseResponse;
+  }
+
   const supabase = createServerClient(
-    supabaseUrl!,
-    supabaseKey!,
+    supabaseUrl,
+    supabaseKey,
     {
       cookies: {
         getAll() {
@@ -33,5 +38,5 @@ export const createClient = (request: NextRequest) => {
     },
   );
 
-  return supabaseResponse
+  return supabaseResponse;
 };
