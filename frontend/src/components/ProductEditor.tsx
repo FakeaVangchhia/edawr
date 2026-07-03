@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useEffect, useState } from 'react';
 import { Category, Product } from '../types';
 import { Image as ImageIcon, ArrowLeft } from 'lucide-react';
@@ -170,6 +172,7 @@ export default function ProductEditor({ productId, onClose }: ProductEditorProps
       <div className="border-b border-slate-200 px-6 py-5">
         <div className="flex items-center gap-4">
           <button 
+            type="button"
             onClick={onClose}
             className="secondary-action -ml-2 p-2 text-slate-500 transition-colors"
           >

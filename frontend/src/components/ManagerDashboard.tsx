@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useSocket } from '../hooks/useSocket';
 import { Message, Order, Product, User } from '../types';
@@ -112,10 +114,10 @@ export default function ManagerDashboard({ headerActions }: ManagerDashboardProp
   }, [messages, selectedPhone]);
 
   useEffect(() => {
-    authFetch('/api/orders').then(r => r.json()).then(setOrders);
-    authFetch('/api/products').then(r => r.json()).then(setProducts);
-    authFetch('/api/users').then(r => r.json()).then(setUsers);
-    authFetch('/api/messages').then(r => r.json()).then(setMessages);
+    authFetch('/api/orders').then(r => r.json()).then(setOrders).catch(console.error);
+    authFetch('/api/products').then(r => r.json()).then(setProducts).catch(console.error);
+    authFetch('/api/users').then(r => r.json()).then(setUsers).catch(console.error);
+    authFetch('/api/messages').then(r => r.json()).then(setMessages).catch(console.error);
 
     if (socket) {
       socket.on('order:created', (order: Order) => {
@@ -125,10 +127,10 @@ export default function ManagerDashboard({ headerActions }: ManagerDashboardProp
         setOrders(prev => prev.map(o => o.id === updatedOrder.id ? { ...o, ...updatedOrder } : o));
       });
       socket.on('inventory:updated', () => {
-        authFetch('/api/products').then(r => r.json()).then(setProducts);
+        authFetch('/api/products').then(r => r.json()).then(setProducts).catch(console.error);
       });
       socket.on('product:updated', () => {
-        authFetch('/api/products').then(r => r.json()).then(setProducts);
+        authFetch('/api/products').then(r => r.json()).then(setProducts).catch(console.error);
       });
       socket.on('message:new', (msg: Message) => {
         setMessages(prev => [...prev, msg]);
@@ -176,7 +178,7 @@ export default function ManagerDashboard({ headerActions }: ManagerDashboardProp
         product.brand,
         product.location,
         product.supplier_name,
-      ].some(value => value.toLowerCase().includes(query))
+      ].some(value => value?.toLowerCase().includes(query))
     );
   }, [inventoryQuery, products]);
 
@@ -284,6 +286,9 @@ export default function ManagerDashboard({ headerActions }: ManagerDashboardProp
         body: JSON.stringify(payload),
       });
       resetProductEditor();
+    } catch (err) {
+      console.error(err);
+      alert('Error saving product');
     } finally {
       setIsSubmittingProduct(false);
     }
@@ -310,11 +315,11 @@ export default function ManagerDashboard({ headerActions }: ManagerDashboardProp
               Orders
             </button>
             <button
-            onClick={() => setActiveTab('products')}
-            className={`rounded-xl px-4 py-2 text-sm font-semibold transition-colors ${activeTab === 'products' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'}`}
-          >
-            Products
-          </button>
+              onClick={() => setActiveTab('products')}
+              className={`rounded-xl px-4 py-2 text-sm font-semibold transition-colors ${activeTab === 'products' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'}`}
+            >
+              Products
+            </button>
             <button
               onClick={() => setActiveTab('inventory')}
               className={`rounded-xl px-4 py-2 text-sm font-semibold transition-colors ${activeTab === 'inventory' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'}`}
@@ -507,6 +512,7 @@ export default function ManagerDashboard({ headerActions }: ManagerDashboardProp
                     </div>
                     {selectedProductId && (
                       <button
+                        type="button"
                         onClick={resetProductEditor}
                         className="rounded-xl border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-600 hover:border-slate-400 hover:text-slate-900"
                       >
@@ -590,7 +596,7 @@ export default function ManagerDashboard({ headerActions }: ManagerDashboardProp
                       <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Product media</p>
                     </div>
                     <div className="grid gap-4 lg:grid-cols-[180px_1fr]">
-                      <div className="overflow-hidden rounded-3xl border border-dashed border-slate-300 bg-slate-50">
+                      <div className="overflow-hidden rounded-3xl border border-dashed border-slate-300 bg-slate-50 flex-shrink-0">
                         {productForm.image_url ? (
                           <img src={assetUrl(productForm.image_url)} alt={productForm.name || 'Product preview'} className="h-44 w-full object-cover" />
                         ) : (
@@ -741,7 +747,7 @@ export default function ManagerDashboard({ headerActions }: ManagerDashboardProp
                           <tr key={product.id} className="align-top hover:bg-slate-50/70">
                             <td className="px-6 py-5">
                               <div className="flex gap-3">
-                                <div className="h-14 w-14 overflow-hidden rounded-2xl border border-slate-200 bg-slate-100">
+                                <div className="h-14 w-14 overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 flex-shrink-0">
                                   {product.image_url ? (
                                     <img src={assetUrl(product.image_url)} alt={product.name} className="h-full w-full object-cover" />
                                   ) : (
@@ -799,6 +805,7 @@ export default function ManagerDashboard({ headerActions }: ManagerDashboardProp
                             </td>
                             <td className="px-6 py-5">
                               <button
+                                type="button"
                                 onClick={() => populateProductEditor(product)}
                                 className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:border-slate-900 hover:text-slate-900"
                               >

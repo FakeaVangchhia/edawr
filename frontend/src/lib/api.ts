@@ -1,6 +1,10 @@
 import { getAdminAccessToken } from './auth';
 
-const rawApiBaseUrl = (import.meta.env.VITE_API_URL as string | undefined)?.trim() || '';
+const rawApiBaseUrl = (
+  process.env.NEXT_PUBLIC_API_URL ||
+  process.env.VITE_API_URL ||
+  ''
+).trim();
 
 const normalizedApiBaseUrl = rawApiBaseUrl.replace(/\/+$/, '');
 

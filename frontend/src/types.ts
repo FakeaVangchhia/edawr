@@ -19,12 +19,12 @@ export interface Product {
   image_url: string;
 }
 
-export type Role = 'manager' | 'delivery'; // New type definition
+export type Role = 'manager' | 'delivery';
 
 export interface User {
   id: number;
   name: string;
-  role: Role; // Updated: using the new Role type
+  role: Role;
   phone: string;
 }
 
@@ -33,7 +33,7 @@ export interface AdminSession {
   accessToken: string;
 }
 
-export interface Category { // New interface
+export interface Category {
   id: number;
   name: string;
   description: string;

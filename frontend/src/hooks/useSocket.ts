@@ -8,9 +8,13 @@ export const useSocket = () => {
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+
     if (!socket) {
       socket = io(API_BASE_URL || undefined);
     }
+
+    setIsConnected(socket.connected);
 
     const onConnect = () => setIsConnected(true);
     const onDisconnect = () => setIsConnected(false);

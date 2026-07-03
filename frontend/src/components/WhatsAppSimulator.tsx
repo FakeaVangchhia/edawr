@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import { MessageSquare, Send } from 'lucide-react';
 import { apiUrl } from '../lib/api';

@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useMemo, useState } from 'react';
 import QRCode from 'react-qr-code';
 import {
@@ -19,7 +21,7 @@ import { Product } from '../types';
 const FALLBACK_WHATSAPP_URL = 'https://wa.me/918787698473';
 
 const whatsappUrl =
-  (import.meta.env.VITE_WHATSAPP_URL as string | undefined)?.trim() || FALLBACK_WHATSAPP_URL;
+  (process.env.NEXT_PUBLIC_WHATSAPP_URL || process.env.VITE_WHATSAPP_URL || '').trim() || FALLBACK_WHATSAPP_URL;
 
 const buildWhatsAppUrl = (message: string) => {
   try {
@@ -329,7 +331,7 @@ export default function Storefront({ onOpenAdmin }: StorefrontProps) {
                         key={product.id}
                         className="grid gap-4 px-6 py-5 md:grid-cols-[96px_minmax(0,1fr)_120px_136px] md:items-center"
                       >
-                        <div className="h-24 w-24 overflow-hidden rounded-2xl border border-slate-200 bg-slate-100">
+                        <div className="h-24 w-24 overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 flex-shrink-0">
                           {product.image_url ? (
                             <img src={assetUrl(product.image_url)} alt={product.name} className="h-full w-full object-cover" />
                           ) : (

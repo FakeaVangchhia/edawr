@@ -1,3 +1,5 @@
+'use client';
+
 import { FormEvent, useMemo, useState } from 'react';
 import { ArrowLeft, LockKeyhole, Store, User as UserIcon } from 'lucide-react';
 import { apiUrl } from '../lib/api';

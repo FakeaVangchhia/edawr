@@ -1,3 +1,5 @@
+'use client';
+
 import { LogOut } from 'lucide-react';
 import ManagerDashboard from './ManagerDashboard';
 import { AdminSession } from '../types';
@@ -15,12 +17,14 @@ export default function AdminShell({ adminUser, onBackToStore, onLogout }: Admin
         {adminUser.username}
       </div>
       <button
+        type="button"
         onClick={onBackToStore}
         className="secondary-action px-4 py-2 text-sm font-semibold shadow-sm backdrop-blur transition"
       >
         Back to Store
       </button>
       <button
+        type="button"
         onClick={onLogout}
         className="secondary-action inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold shadow-sm backdrop-blur transition"
       >
