@@ -24,12 +24,22 @@ const whatsappUrl =
   (process.env.NEXT_PUBLIC_WHATSAPP_URL || process.env.VITE_WHATSAPP_URL || '').trim() || FALLBACK_WHATSAPP_URL;
 
 const buildWhatsAppUrl = (message: string) => {
+  let cleanUrl = whatsappUrl;
+
+  // If it's a raw phone number (digits, spaces, dashes, or leading plus)
+  if (/^\+?[\d\s-]+$/.test(cleanUrl)) {
+    const digits = cleanUrl.replace(/[^\d+]/g, '');
+    cleanUrl = `https://wa.me/${digits}`;
+  } else if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
+    cleanUrl = `https://${cleanUrl}`;
+  }
+
   try {
-    const url = new URL(whatsappUrl);
+    const url = new URL(cleanUrl);
     url.searchParams.set('text', message);
     return url.toString();
   } catch {
-    const [baseUrl] = whatsappUrl.split('?');
+    const [baseUrl] = cleanUrl.split('?');
     return `${baseUrl}?text=${encodeURIComponent(message)}`;
   }
 };
@@ -180,6 +190,14 @@ export default function Storefront({ onOpenAdmin }: StorefrontProps) {
   const checkoutUrl = useMemo(() => {
     return buildWhatsAppUrl(orderMessage);
   }, [orderMessage]);
+
+  const qrValue = useMemo(() => {
+    return selectedItems.length > 0 ? checkoutUrl : dawrUrl;
+  }, [selectedItems.length, checkoutUrl, dawrUrl]);
+
+  const qrLabel = useMemo(() => {
+    return selectedItems.length > 0 ? 'Scan to send order' : 'Scan to open Dawr';
+  }, [selectedItems.length]);
 
   const updateQuantity = (productId: number, nextQuantity: number) => {
     setQuantities(current => {
@@ -420,9 +438,14 @@ export default function Storefront({ onOpenAdmin }: StorefrontProps) {
               </div>
 
               <div className="mt-5 flex items-center justify-center rounded-[1.75rem] border border-slate-200 bg-white p-5">
-                <div className="text-center">
-                  <QRCode value={dawrUrl} size={148} />
-                  <div className="mt-3 text-sm font-medium text-slate-500">Scan to open Dawr</div>
+                <div className="text-center w-full max-w-[148px]">
+                  <QRCode
+                    value={qrValue}
+                    size={148}
+                    style={{ height: 'auto', maxWidth: '100%', width: '100%' }}
+                    viewBox="0 0 148 148"
+                  />
+                  <div className="mt-3 text-sm font-medium text-slate-500">{qrLabel}</div>
                 </div>
               </div>
 
