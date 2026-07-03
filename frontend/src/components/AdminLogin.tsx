@@ -1,8 +1,8 @@
 'use client';
 
 import { FormEvent, useMemo, useState } from 'react';
-import { ArrowLeft, LockKeyhole, Store, User as UserIcon } from 'lucide-react';
-import { apiUrl } from '../lib/api';
+import { ArrowLeft, LockKeyhole, Mail, Store } from 'lucide-react';
+import { createClient } from '@/utils/supabase/client';
 import { AdminSession } from '../types';
 
 type AdminLoginProps = {
@@ -11,13 +11,15 @@ type AdminLoginProps = {
 };
 
 export default function AdminLogin({ onBackToStore, onLogin }: AdminLoginProps) {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
+  const supabase = createClient();
+
   const helperText = useMemo(
-    () => 'Use the backend admin username and password configured on the server.',
+    () => 'Use your registered Supabase Admin email and password to log in.',
     []
   );
 
@@ -25,33 +27,32 @@ export default function AdminLogin({ onBackToStore, onLogin }: AdminLoginProps) 
     event.preventDefault();
     setError('');
 
-    const normalizedUsername = username.trim();
+    const normalizedEmail = email.trim();
     const normalizedPassword = password;
 
-    if (!normalizedUsername || !normalizedPassword) {
-      setError('Enter username and password.');
+    if (!normalizedEmail || !normalizedPassword) {
+      setError('Enter email and password.');
       return;
     }
 
     setIsSubmitting(true);
     try {
-      const response = await fetch(apiUrl('/api/admin/login'), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          username: normalizedUsername,
-          password: normalizedPassword,
-        }),
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
+        email: normalizedEmail,
+        password: normalizedPassword,
       });
-      if (!response.ok) {
-        const data = await response.json().catch(() => null);
-        throw new Error(data?.detail || 'Unable to sign in.');
+
+      if (signInError) {
+        throw signInError;
       }
 
-      const data = await response.json();
+      if (!data.session) {
+        throw new Error('Could not establish an active session.');
+      }
+
       onLogin({
-        username: normalizedUsername,
-        accessToken: data.access_token,
+        username: data.user.email || normalizedEmail,
+        accessToken: data.session.access_token,
       });
     } catch (loginError) {
       setError(loginError instanceof Error ? loginError.message : 'Unable to sign in.');
@@ -72,7 +73,7 @@ export default function AdminLogin({ onBackToStore, onLogin }: AdminLoginProps) 
             Sign in to open the dashboard.
           </h1>
           <p className="mt-3 max-w-xl text-base leading-7 text-slate-600">
-            Frontend admin access now uses the backend JWT login endpoint.
+            Frontend admin access is now managed securely using Supabase Authentication.
           </p>
 
           <div className="mt-8 grid gap-3 sm:grid-cols-3">
@@ -81,12 +82,12 @@ export default function AdminLogin({ onBackToStore, onLogin }: AdminLoginProps) 
               <div className="mt-1 text-xl font-black text-slate-950">Admin</div>
             </div>
             <div className="rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4">
-              <div className="text-sm text-slate-500">Username</div>
-              <div className="mt-1 text-xl font-black text-slate-950">Backend</div>
+              <div className="text-sm text-slate-500">Provider</div>
+              <div className="mt-1 text-xl font-black text-slate-950">Supabase</div>
             </div>
             <div className="rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4">
-              <div className="text-sm text-slate-500">Password</div>
-              <div className="mt-1 text-xl font-black text-slate-950">JWT Auth</div>
+              <div className="text-sm text-slate-500">Security</div>
+              <div className="mt-1 text-xl font-black text-slate-950">SSL/JWT</div>
             </div>
           </div>
         </section>
@@ -99,16 +100,16 @@ export default function AdminLogin({ onBackToStore, onLogin }: AdminLoginProps) 
             </div>
 
             <label className="block">
-              <span className="mb-2 block text-sm font-medium text-slate-700">Username</span>
+              <span className="mb-2 block text-sm font-medium text-slate-700">Email Address</span>
               <div className="relative">
-                <UserIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                 <input
-                  type="text"
-                  value={username}
-                  onChange={event => setUsername(event.target.value)}
-                  placeholder="Enter your username"
+                  type="email"
+                  value={email}
+                  onChange={event => setEmail(event.target.value)}
+                  placeholder="admin@example.com"
                   className="field-control py-3 pl-10 pr-4"
-                  autoComplete="username"
+                  autoComplete="email"
                 />
               </div>
             </label>

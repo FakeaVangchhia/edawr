@@ -6,27 +6,49 @@ import AdminShell from '@/components/AdminShell';
 import AdminLogin from '@/components/AdminLogin';
 import { AdminSession } from '@/types';
 import { ADMIN_SESSION_KEY } from '@/lib/auth';
+import { createClient } from '@/utils/supabase/client';
 
 export default function AdminPage() {
   const router = useRouter();
   const [adminUser, setAdminUser] = useState<AdminSession | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
 
+  const supabase = createClient();
+
   useEffect(() => {
-    // Load session storage client-side only
+    // Load session storage and sync with Supabase Auth client-side only
     if (typeof window !== 'undefined') {
-      const rawValue = window.sessionStorage.getItem(ADMIN_SESSION_KEY);
-      if (rawValue) {
+      const syncSession = async () => {
         try {
-          const session = JSON.parse(rawValue) as AdminSession;
-          setAdminUser(session);
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session && session.user) {
+            const adminSession: AdminSession = {
+              username: session.user.email || '',
+              accessToken: session.access_token,
+            };
+            setAdminUser(adminSession);
+            window.sessionStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(adminSession));
+          } else {
+            // Check fallback for session storage
+            const rawValue = window.sessionStorage.getItem(ADMIN_SESSION_KEY);
+            if (rawValue) {
+              try {
+                const session = JSON.parse(rawValue) as AdminSession;
+                setAdminUser(session);
+              } catch {
+                window.sessionStorage.removeItem(ADMIN_SESSION_KEY);
+              }
+            }
+          }
         } catch {
-          window.sessionStorage.removeItem(ADMIN_SESSION_KEY);
+          // Ignore sync errors
+        } finally {
+          setIsInitialized(true);
         }
-      }
-      setIsInitialized(true);
+      };
+      syncSession();
     }
-  }, []);
+  }, [supabase.auth]);
 
   const handleLogin = (session: AdminSession) => {
     setAdminUser(session);
@@ -35,11 +57,12 @@ export default function AdminPage() {
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     setAdminUser(null);
     if (typeof window !== 'undefined') {
       window.sessionStorage.removeItem(ADMIN_SESSION_KEY);
     }
+    await supabase.auth.signOut();
   };
 
   const handleBackToStore = () => {
