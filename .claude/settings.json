@@ -14,14 +14,8 @@
       "Bash(venv/Scripts/alembic revision:*)",
       "Bash(venv/Scripts/alembic upgrade:*)",
       "Bash(venv/Scripts/python -c \"from app.main import app; print\\(''Import OK''\\)\")",
-      "Bash(curl -s --max-time 10 https://edawr-backend.onrender.com/api/store/products)",
-      "Bash(curl -s --max-time 10 https://edawr-backend.onrender.com/)",
-      "Bash(curl -sv --max-time 10 https://edawr-backend.onrender.com/api/store/products)",
-      "Bash(curl -s --max-time 10 https://edawr-backend.onrender.com/docs)",
-      "Bash(curl -s --max-time 10 \"https://edawr-backend.onrender.com/openapi.json\")",
       "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(list\\(d.get\\('paths',{}\\).keys\\(\\)\\)\\)\")",
-      "Bash(git -C f:/eDawr status)",
-      "Bash(curl -s --max-time 15 https://edawr-backend.onrender.com/api/store/products)"
+      "Bash(git -C f:/eDawr status)"
     ]
   }
 }
