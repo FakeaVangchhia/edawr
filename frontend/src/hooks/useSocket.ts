@@ -14,6 +14,7 @@ export const useSocket = () => {
       socket = io(API_BASE_URL || undefined);
     }
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsConnected(socket.connected);
 
     const onConnect = () => setIsConnected(true);

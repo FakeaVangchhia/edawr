@@ -1,11 +1,16 @@
 import { createClient } from '@/utils/supabase/server'
 import { cookies } from 'next/headers'
 
+interface Todo {
+  id: string | number;
+  name: string;
+}
+
 export default async function Page() {
   const cookieStore = await cookies()
   const supabase = createClient(cookieStore)
 
-  let todos: any[] = [];
+  let todos: Todo[] = [];
   let errorMsg: string | null = null;
 
   try {
@@ -13,10 +18,10 @@ export default async function Page() {
     if (error) {
       errorMsg = error.message;
     } else {
-      todos = data || [];
+      todos = (data as Todo[]) || [];
     }
-  } catch (err: any) {
-    errorMsg = err?.message || 'Failed to fetch todos';
+  } catch (err: unknown) {
+    errorMsg = err instanceof Error ? err.message : 'Failed to fetch todos';
   }
 
   return (

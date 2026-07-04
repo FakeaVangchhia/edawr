@@ -202,8 +202,9 @@ export default function Storefront({ onOpenAdmin }: StorefrontProps) {
   const updateQuantity = (productId: number, nextQuantity: number) => {
     setQuantities(current => {
       if (nextQuantity <= 0) {
-        const { [productId]: _removed, ...rest } = current;
-        return rest;
+        const next = { ...current };
+        delete next[productId];
+        return next;
       }
 
       return { ...current, [productId]: nextQuantity };

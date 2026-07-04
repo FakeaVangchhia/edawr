@@ -49,8 +49,8 @@ export default function CategoriesList() {
       fetchCategories();
       setIsEditing(false);
       setEditCategory(null);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to save category');
     }
   };
 
@@ -63,8 +63,8 @@ export default function CategoriesList() {
         throw new Error((await res.json()).detail || 'Failed to delete category');
       }
       fetchCategories();
-    } catch (err: any) {
-      alert(err.message);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to delete category');
     }
   };
 

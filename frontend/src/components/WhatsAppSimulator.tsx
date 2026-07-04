@@ -27,7 +27,7 @@ export default function WhatsAppSimulator() {
       } else {
         setStatus(`Error: ${data.detail || data.error || 'Unable to handle message.'}`);
       }
-    } catch (err) {
+    } catch {
       setStatus('Failed to send order.');
     }
     
@@ -43,8 +43,8 @@ export default function WhatsAppSimulator() {
       <div className="p-4 bg-[url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png')] bg-cover">
         <div className="bg-white/90 backdrop-blur-sm p-3 rounded-xl mb-4 text-xs text-slate-700 shadow-sm">
           Try sending an order like:<br/>
-          <strong className="font-mono text-emerald-700">"2 milk, 1 bread"</strong><br/>
-          Or send <strong className="font-mono text-emerald-700">"/dawr"</strong> to test the QR flow.
+          <strong className="font-mono text-emerald-700">&quot;2 milk, 1 bread&quot;</strong><br/>
+          Or send <strong className="font-mono text-emerald-700">&quot;/dawr&quot;</strong> to test the QR flow.
         </div>
         
         <form onSubmit={sendOrder} className="flex flex-col gap-2">
