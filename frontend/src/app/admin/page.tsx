@@ -12,8 +12,27 @@ export default function AdminPage() {
   const router = useRouter();
   const [adminUser, setAdminUser] = useState<AdminSession | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [errorParam, setErrorParam] = useState<string | null>(null);
 
   const supabase = createClient();
+
+  // Check for oauth/callback errors in the URL
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const err = params.get('error');
+      if (err) {
+        setErrorParam(
+          err === 'auth-failed'
+            ? 'Google authentication failed. Please try again.'
+            : decodeURIComponent(err)
+        );
+        // Clear the error parameter from URL to prevent showing on refresh
+        const cleanUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, cleanUrl);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     // Load session storage and sync with Supabase Auth client-side only
@@ -89,8 +108,10 @@ export default function AdminPage() {
         <AdminLogin
           onBackToStore={handleBackToStore}
           onLogin={handleLogin}
+          initialError={errorParam}
         />
       )}
     </div>
   );
 }
+
