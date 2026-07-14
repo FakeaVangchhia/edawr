@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import QRCode from 'react-qr-code';
 import {
   ArrowRight,
+  ChevronDown,
   ListFilter,
   MessageCircle,
   Minus,
@@ -305,23 +306,23 @@ export default function Storefront({ onOpenAdmin }: StorefrontProps) {
                 </div>
 
                 <div className="flex flex-col gap-3 sm:flex-row">
-                  <label className="relative min-w-0 sm:w-72">
+                  <label className="relative block min-w-0 sm:w-72">
                     <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                     <input
                       type="text"
                       value={searchQuery}
                       onChange={event => setSearchQuery(event.target.value)}
                       placeholder="Search items..."
-                      className="field-control py-2.5 pl-10 pr-3 text-sm"
+                      className="field-control h-[42px] py-0 pl-10 pr-3 text-sm"
                     />
                   </label>
 
-                  <label className="relative min-w-0 sm:w-52">
+                  <label className="relative block min-w-0 sm:w-52">
                     <ListFilter className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                     <select
                       value={selectedCategory}
                       onChange={event => setSelectedCategory(event.target.value)}
-                      className="field-control appearance-none py-2.5 pl-10 pr-8 text-sm"
+                      className="field-control appearance-none h-[42px] py-0 pl-10 pr-10 text-sm"
                     >
                       {categories.map(category => (
                         <option key={category} value={category}>
@@ -329,6 +330,7 @@ export default function Storefront({ onOpenAdmin }: StorefrontProps) {
                         </option>
                       ))}
                     </select>
+                    <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                   </label>
                 </div>
               </div>
