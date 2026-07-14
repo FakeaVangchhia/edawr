@@ -6,6 +6,9 @@ create table if not exists users (
   name text not null,
   role text not null check (role in ('manager', 'delivery')),
   phone text not null unique,
+  base_latitude double precision not null default 23.7272,
+  base_longitude double precision not null default 92.7178,
+  service_radius_km double precision not null default 10.0,
   created_at timestamp with time zone not null default now()
 );
 
@@ -58,8 +61,14 @@ create policy "Allow public write products" on products for all to anon, authent
 create table if not exists orders (
   id bigint primary key generated always as identity,
   customer_phone text not null,
+  customer_name text not null default 'WhatsApp Customer',
+  customer_address text not null default 'Bazar Bawn, Aizawl',
+  customer_latitude double precision not null default 23.7272,
+  customer_longitude double precision not null default 92.7178,
   status text not null default 'Pending' check (status in ('Pending', 'Assigned', 'Delivered')),
   delivery_boy_id bigint references users(id) on delete set null,
+  offered_to_delivery_boy_id bigint references users(id) on delete set null,
+  offered_distance_km double precision,
   created_at timestamp with time zone not null default now()
 );
 

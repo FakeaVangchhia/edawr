@@ -26,6 +26,9 @@ export interface User {
   name: string;
   role: Role;
   phone: string;
+  base_latitude?: number;
+  base_longitude?: number;
+  service_radius_km?: number;
 }
 
 export interface AdminSession {
@@ -53,8 +56,14 @@ export interface OrderItem {
 export interface Order {
   id: number;
   customer_phone: string;
+  customer_name?: string;
+  customer_address?: string;
+  customer_latitude?: number;
+  customer_longitude?: number;
   status: 'Pending' | 'Assigned' | 'Delivered';
   delivery_boy_id: number | null;
+  offered_to_delivery_boy_id?: number | null;
+  offered_distance_km?: number | null;
   created_at: string;
   items: OrderItem[];
 }

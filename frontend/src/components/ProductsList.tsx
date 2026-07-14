@@ -64,6 +64,18 @@ export default function ProductsList({ onEditProduct }: ProductsListProps) {
     );
   }, [searchQuery, products]);
 
+  const inventoryMetrics = useMemo(() => {
+    const totalUnits = products.reduce((sum, product) => sum + (product.stock || 0), 0);
+    const lowStockCount = products.filter(product => (product.stock || 0) <= (product.reorder_level || 0)).length;
+    const inventoryValue = products.reduce((sum, product) => sum + (Number(product.cost_price || 0) * (product.stock || 0)), 0);
+    return {
+      totalSkus: products.length,
+      totalUnits,
+      lowStockCount,
+      inventoryValue,
+    };
+  }, [products]);
+
   return (
     <div className="space-y-5">
       <div className="panel rounded-[1.75rem]">
@@ -92,34 +104,50 @@ export default function ProductsList({ onEditProduct }: ProductsListProps) {
           </div>
         </div>
 
-        <div className="grid gap-4 border-b border-slate-200 bg-slate-50 px-6 py-4 md:grid-cols-4">
-          <div className="rounded-2xl border border-slate-200 bg-white p-4">
-            <div className="flex items-center gap-2 text-sm font-semibold text-slate-700">
-              <MapPin className="h-4 w-4 text-slate-400" />
-              Storage control
+        <div className="grid gap-4 border-b border-slate-200 bg-slate-50 px-6 py-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Total SKUs</p>
+                <p className="mt-1 text-2xl font-black text-slate-900">{inventoryMetrics.totalSkus}</p>
+              </div>
+              <div className="rounded-xl bg-slate-100 p-2 text-slate-700">
+                <Box className="h-5 w-5" />
+              </div>
             </div>
-            <p className="mt-2 text-sm text-slate-500">Every SKU carries a location tag so pickers know exactly where to source it.</p>
           </div>
-          <div className="rounded-2xl border border-slate-200 bg-white p-4">
-            <div className="flex items-center gap-2 text-sm font-semibold text-slate-700">
-              <ImageIcon className="h-4 w-4 text-slate-400" />
-              Product imagery
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Inventory Units</p>
+                <p className="mt-1 text-2xl font-black text-slate-900">{inventoryMetrics.totalUnits}</p>
+              </div>
+              <div className="rounded-xl bg-blue-50/70 p-2 text-blue-700">
+                <Box className="h-5 w-5" />
+              </div>
             </div>
-            <p className="mt-2 text-sm text-slate-500">Each SKU can now carry a visual reference for faster picking and cleaner catalog review.</p>
           </div>
-          <div className="rounded-2xl border border-slate-200 bg-white p-4">
-            <div className="flex items-center gap-2 text-sm font-semibold text-slate-700">
-              <Users className="h-4 w-4 text-slate-400" />
-              Vendor traceability
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Low Stock Items</p>
+                <p className="mt-1 text-2xl font-black text-slate-900">{inventoryMetrics.lowStockCount}</p>
+              </div>
+              <div className="rounded-xl bg-amber-50 p-2 text-amber-700">
+                <ShieldCheck className="h-5 w-5" />
+              </div>
             </div>
-            <p className="mt-2 text-sm text-slate-500">Supplier contact fields are directly editable here for replenishment and escalation.</p>
           </div>
-          <div className="rounded-2xl border border-slate-200 bg-white p-4">
-            <div className="flex items-center gap-2 text-sm font-semibold text-slate-700">
-              <ShieldCheck className="h-4 w-4 text-slate-400" />
-              Reorder discipline
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Inventory Value</p>
+                <p className="mt-1 text-2xl font-black text-slate-900">{formatCurrency(inventoryMetrics.inventoryValue)}</p>
+              </div>
+              <div className="rounded-xl bg-emerald-50 p-2 text-emerald-700">
+                <Box className="h-5 w-5" />
+              </div>
             </div>
-            <p className="mt-2 text-sm text-slate-500">Low stock and out-of-stock products are flagged against the configured reorder level.</p>
           </div>
         </div>
 
